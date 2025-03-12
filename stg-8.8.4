@@ -1,0 +1,176 @@
+CASE: user ADT Unlifted
+==== STG ====
+x0 :: Any
+[GblId] =
+    "Value: MyFalse\n"#;
+
+x1 :: Any
+[GblId] =
+    "Value: MyTrue\n"#;
+
+MyFalse :: Any
+[GblId] =
+    CCS_DONT_CARE MyFalse! [];
+
+MyTrue :: Any
+[GblId] =
+    CCS_DONT_CARE MyTrue! [];
+
+main :: Any
+[GblId] =
+    \u [void_0E]
+        case MyTrue [] of x100 {
+          __DEFAULT ->
+              case x100 of x101 {
+                MyTrue -> __pkg_ccall [x1];
+                MyFalse -> __pkg_ccall [x0];
+              };
+        };
+==== Lint STG ====
+
+==================== Raw Cmm ====================
+[]
+
+
+*** CmmLint [:Main]:
+CmmLint [:Main]: alloc=6640 time=0.007
+
+==================== Raw Cmm ====================
+[section ""cstring" . :Main.x0_bytes" {
+     :Main.x0_bytes:
+         I8[] [86,97,108,117,101,58,32,77,121,70,97,108,115,101,10]
+ }]
+
+
+*** CmmLint [:Main]:
+CmmLint [:Main]: alloc=6568 time=0.003
+
+==================== Raw Cmm ====================
+[section ""cstring" . :Main.x1_bytes" {
+     :Main.x1_bytes:
+         I8[] [86,97,108,117,101,58,32,77,121,84,114,117,101,10]
+ }]
+
+
+*** CmmLint [:Main]:
+CmmLint [:Main]: alloc=6568 time=0.002
+
+==================== Raw Cmm ====================
+[section ""data" . :Main.MyFalse_closure" {
+     :Main.MyFalse_closure:
+         const :Main.MyFalse_con_info;
+ }]
+
+
+*** CmmLint [:Main]:
+CmmLint [:Main]: alloc=6568 time=0.003
+
+==================== Raw Cmm ====================
+[section ""data" . :Main.MyTrue_closure" {
+     :Main.MyTrue_closure:
+         const :Main.MyTrue_con_info;
+ }]
+
+
+*** CmmLint [:Main]:
+CmmLint [:Main]: alloc=6568 time=0.003
+
+==================== Raw Cmm ====================
+[:Main.main_entry() //  []
+         { [(cALv,
+             :Main.main_info:
+                 const 4294967299;
+                 const 0;
+                 const 14 :: W32;
+                 const :Main.MyTrue_closure-:Main.main_info;)]
+         }
+     {offset
+       cALv: // global
+           goto cALx;
+       cALx: // global
+           _u1C::P64 = :Main.MyTrue_closure+2;
+           _u1D::P64 = _u1C::P64;
+           _cALu::P64 = _u1D::P64 & 7;
+           if (_cALu::P64 != 1) goto cALs; else goto cALt;
+       cALs: // global
+           _cALN::I64 = printf;
+           _cALO::I64 = :Main.x1_bytes;
+           (_cALD::P64) = call "ccall" arg hints:  [PtrHint]  result hints:  [PtrHint] (_cALN::I64)(_cALO::I64);
+           R1 = _cALD::P64;
+           call (P64[Sp])(R1) args: 8, res: 0, upd: 8;
+       cALt: // global
+           _cALL::I64 = printf;
+           _cALM::I64 = :Main.x0_bytes;
+           (_cALJ::P64) = call "ccall" arg hints:  [PtrHint]  result hints:  [PtrHint] (_cALL::I64)(_cALM::I64);
+           R1 = _cALJ::P64;
+           call (P64[Sp])(R1) args: 8, res: 0, upd: 8;
+     }
+ },
+ section ""data" . :Main.main_closure" {
+     :Main.main_closure:
+         const :Main.main_info;
+         const 0;
+ }]
+
+
+*** CmmLint [:Main]:
+CmmLint [:Main]: alloc=15152 time=0.026
+
+==================== Raw Cmm ====================
+[section ""relreadonly" . :Main.MyBool_closure_tbl" {
+     :Main.MyBool_closure_tbl:
+         const :Main.MyFalse_closure+1;
+         const :Main.MyTrue_closure+2;
+ }]
+
+
+*** CmmLint [:Main]:
+CmmLint [:Main]: alloc=6568 time=0.002
+
+==================== Raw Cmm ====================
+[section ""cstring" . iALV_str" {
+     iALV_str:
+         I8[] [109,97,105,110,58,58,77,97,105,110,46,77,121,70,97,108,115,101]
+ },
+ :Main.MyFalse_con_entry() //  []
+         { [(cALU,
+             :Main.MyFalse_con_info:
+                 const iALV_str-:Main.MyFalse_con_info;
+                 const 4294967296;
+                 const 3 :: W32;
+                 const 0 :: W32;)]
+         }
+     {offset
+       cALU: // global
+           R1 = R1 + 1;
+           call (P64[Sp])(R1) args: 8, res: 0, upd: 8;
+     }
+ }]
+
+
+*** CmmLint [:Main]:
+CmmLint [:Main]: alloc=8528 time=0.005
+
+==================== Raw Cmm ====================
+[section ""cstring" . iAM0_str" {
+     iAM0_str:
+         I8[] [109,97,105,110,58,58,77,97,105,110,46,77,121,84,114,117,101]
+ },
+ :Main.MyTrue_con_entry() //  []
+         { [(cALZ,
+             :Main.MyTrue_con_info:
+                 const iAM0_str-:Main.MyTrue_con_info;
+                 const 4294967296;
+                 const 3 :: W32;
+                 const 1 :: W32;)]
+         }
+     {offset
+       cALZ: // global
+           R1 = R1 + 2;
+           call (P64[Sp])(R1) args: 8, res: 0, upd: 8;
+     }
+ }]
+
+
+*** CmmLint [:Main]:
+CmmLint [:Main]: alloc=8528 time=0.005
