@@ -4,7 +4,7 @@ module StgLoopback where
 import GHC
 import DynFlags
 import ErrUtils
-import Platform ( platformOS, osSubsectionsViaSymbols )
+import GHC.Platform ( platformOS, osSubsectionsViaSymbols )
 import HscTypes
 import Outputable
 import GHC.Paths ( libdir )
@@ -21,7 +21,7 @@ import CodeOutput
 import StgLint
 
 -- Core Passes
-import StgCmm (codeGen)
+import qualified GHC.StgToCmm as StgToCmm ( codeGen )
 import Cmm
 import CmmInfo (cmmToRawCmm )
 import CmmPipeline (cmmPipeline)
@@ -53,25 +53,9 @@ modloc = ModLocation
 
 data Backend = NCG | LLVM
 
-{-
-type StgTopBinding = GenStgTopBinding 'Vanilla
-
-type CgStgTopBinding = GenStgTopBinding 'CodeGen
--}
-
 compileProgram :: Backend -> [TyCon] -> [StgTopBinding] -> IO ()
 compileProgram backend tyCons topBinds = runGhc (Just libdir) $ do
   dflags <- getSessionDynFlags
-  {- hsc_env <- getSession -- Phase
-  let result = case hsc_env of
-        (HscOut _ _ result) -> result
-        _ -> undefined
-  let cgguts = case result of
-         (HscRecomp cgguts _) -> cgguts
-         _ -> undefined
-
-  let this_mod = cg_module cgguts
-  -}
 
   liftIO $ do
     putStrLn "==== STG ===="
@@ -157,7 +141,7 @@ newGen dflags hsc_env output_filename this_mod data_tycons cost_centre_info stg_
                   return a
       rawcmms1 = Stream.mapM dump rawcmms0
 
-  (output_filename, (_stub_h_exists, stub_c_exists), foreign_fps)
+  (output_filename, (_stub_h_exists, stub_c_exists), foreign_fps, ())
       <- {-# SCC "codeOutput" #-}
         codeOutput dflags this_mod output_filename location
         foreign_stubs foreign_files dependencies rawcmms1
@@ -179,7 +163,7 @@ doCodeGen hsc_env this_mod data_tycons
 
     let cmm_stream :: Stream IO CmmGroup ()
         cmm_stream = {-# SCC "StgCmm" #-}
-            StgCmm.codeGen dflags this_mod data_tycons
+            StgToCmm.codeGen dflags this_mod data_tycons
                            cost_centre_info stg_binds_w_fvs hpc_info
 
         -- codegen consumes a stream of CmmGroup, and produces a new
@@ -201,7 +185,7 @@ doCodeGen hsc_env this_mod data_tycons
     -- we generate one SRT for the whole module.
     let
      pipeline_stream
-      | gopt Opt_SplitObjs dflags || gopt Opt_SplitSections dflags ||
+      | gopt Opt_SplitSections dflags ||
         osSubsectionsViaSymbols (platformOS (targetPlatform dflags))
         = {-# SCC "cmmPipeline" #-}
           let run_pipeline us cmmgroup = do

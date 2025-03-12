@@ -16,6 +16,7 @@ library
 
   build-depends:
       base
+    , ghc-boot
     , mtl
     , bytestring
     , ghc
