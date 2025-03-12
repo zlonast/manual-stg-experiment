@@ -27,6 +27,7 @@ import CmmInfo (cmmToRawCmm )
 import CmmPipeline (cmmPipeline)
 import CmmBuildInfoTables (emptySRT)
 import UniqSupply ( mkSplitUniqSupply, initUs_ )
+import StgFVs           ( annTopBindingsFreeVars )
 
 import Control.Monad.Trans
 import Control.Monad
@@ -43,6 +44,7 @@ modloc = ModLocation
  { ml_hs_file  = Nothing
  , ml_hi_file  = "Example.hi"
  , ml_obj_file = "Example.o"
+ , ml_hie_file = "hie.o"
  }
 
 -------------------------------------------------------------------------------
@@ -51,15 +53,31 @@ modloc = ModLocation
 
 data Backend = NCG | LLVM
 
+{-
+type StgTopBinding = GenStgTopBinding 'Vanilla
+
+type CgStgTopBinding = GenStgTopBinding 'CodeGen
+-}
+
 compileProgram :: Backend -> [TyCon] -> [StgTopBinding] -> IO ()
 compileProgram backend tyCons topBinds = runGhc (Just libdir) $ do
   dflags <- getSessionDynFlags
+  {- hsc_env <- getSession -- Phase
+  let result = case hsc_env of
+        (HscOut _ _ result) -> result
+        _ -> undefined
+  let cgguts = case result of
+         (HscRecomp cgguts _) -> cgguts
+         _ -> undefined
+
+  let this_mod = cg_module cgguts
+  -}
 
   liftIO $ do
     putStrLn "==== STG ===="
     putStrLn $ showSDoc dflags $ pprStgTopBindings topBinds
     putStrLn "==== Lint STG ===="
-    lintStgTopBindings dflags True "Manual" topBinds
+    lintStgTopBindings dflags modl True "Manual" topBinds
 
   -- construct STG program manually
   -- TODO: specify the following properly
@@ -157,11 +175,12 @@ doCodeGen   :: HscEnv -> Module -> [TyCon]
 doCodeGen hsc_env this_mod data_tycons
               cost_centre_info stg_binds hpc_info = do
     let dflags = hsc_dflags hsc_env
+    let stg_binds_w_fvs = annTopBindingsFreeVars stg_binds
 
     let cmm_stream :: Stream IO CmmGroup ()
         cmm_stream = {-# SCC "StgCmm" #-}
             StgCmm.codeGen dflags this_mod data_tycons
-                           cost_centre_info stg_binds hpc_info
+                           cost_centre_info stg_binds_w_fvs hpc_info
 
         -- codegen consumes a stream of CmmGroup, and produces a new
         -- stream of CmmGroup (not necessarily synchronised: one

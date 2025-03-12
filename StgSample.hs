@@ -105,11 +105,11 @@ sampleFFI = do
       topBinds  =
         [ StgTopStringLit idStr0 (BS8.pack "Hello!\n1 + 2 = %d\n")
         , StgTopLifted $ StgNonRec (mkIdN 1 "main") $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
                 StgOpApp (StgPrimOp IntAddOp)
-                  [ StgLitArg $ mkMachInt dflags 1
-                  , StgLitArg $ mkMachInt dflags 2
+                  [ StgLitArg $ mkLitInt dflags 1
+                  , StgLitArg $ mkLitInt dflags 2
                   ] intTy
               ) idInt0 (PrimAlt IntRep)
               [ (DEFAULT, [],
@@ -145,11 +145,11 @@ sampleUnboxedTuple1 = do
       topBinds  =
         [ StgTopStringLit idStr0 (BS8.pack "Hello!\n1 + 2 = %d\n")
         , StgTopLifted $ StgNonRec (mkIdN 1 "main") $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
                 StgConApp (getDataCon u2IntTy)
-                  [ StgLitArg $ mkMachInt dflags 3
-                  , StgLitArg $ mkMachInt dflags 4
+                  [ StgLitArg $ mkLitInt dflags 3
+                  , StgLitArg $ mkLitInt dflags 4
                   ] []
               ) idInt0 (MultiValAlt 2)
               [ (DataAlt (getDataCon u2IntTy), [idInt1, idInt2],
@@ -185,11 +185,11 @@ sampleUnboxedTuple2 = do
       topBinds  =
         [ StgTopStringLit idStr0 (BS8.pack "Hello!\n1 + 2 = %d\n")
         , StgTopLifted $ StgNonRec (mkIdN 1 "main") $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
                 StgConApp (tupleDataCon Unboxed 2)
-                  [ StgLitArg $ mkMachInt dflags 3
-                  , StgLitArg $ mkMachInt dflags 4
+                  [ StgLitArg $ mkLitInt dflags 3
+                  , StgLitArg $ mkLitInt dflags 4
                   ] []
               ) idInt0 (MultiValAlt 2)
               [ (DEFAULT, [],
@@ -237,11 +237,11 @@ sampleBoxedTuple1 = do
         [ StgTopStringLit idStr0 (BS8.pack "Value: %d\n")
         , StgTopStringLit idStr1 (BS8.pack "Value: %d\n")
         , StgTopLifted $ StgNonRec (mkIdN 1 "main") $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
                 StgConApp (tupleDataCon Boxed 2)
-                  [ StgLitArg $ mkMachInt dflags 3
-                  , StgLitArg $ mkMachInt dflags 4
+                  [ StgLitArg $ mkLitInt dflags 3
+                  , StgLitArg $ mkLitInt dflags 4
                   ] []
               ) idInt0 PolyAlt
               [ (DEFAULT, [],
@@ -289,11 +289,11 @@ sampleBoxedTuple2 = do
         [ StgTopStringLit idStr0 (BS8.pack "Value: %d\n")
         , StgTopStringLit idStr1 (BS8.pack "Value: %d\n")
         , StgTopLifted $ StgNonRec (mkIdN 1 "main") $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
                 StgConApp (tupleDataCon Boxed 2)
-                  [ StgLitArg $ mkMachInt dflags 3
-                  , StgLitArg $ mkMachInt dflags 4
+                  [ StgLitArg $ mkLitInt dflags 3
+                  , StgLitArg $ mkLitInt dflags 4
                   ] []
               ) idInt0 PolyAlt
               [ (DEFAULT, [],
@@ -342,7 +342,7 @@ sampleADT1 = do
         , StgTopLifted $ StgNonRec (mkVanillaGlobal (dataConName dcMyFalse) (repTy LiftedRep)) $ StgRhsCon dontCareCCS dcMyFalse []
         , StgTopLifted $ StgNonRec (mkVanillaGlobal (dataConName dcMyTrue)  (repTy LiftedRep)) $ StgRhsCon dontCareCCS dcMyTrue []
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
                 StgConApp dcMyFalse [] (error "StgConApp type list")
               ) idLifted0 PolyAlt
@@ -406,7 +406,7 @@ sampleADT2 = do
         , StgTopLifted $ StgNonRec (mkVanillaGlobal (dataConName dcMyFalse) (repTy LiftedRep)) $ StgRhsCon dontCareCCS dcMyFalse []
         , StgTopLifted $ StgNonRec (mkVanillaGlobal (dataConName dcMyTrue)  (repTy LiftedRep)) $ StgRhsCon dontCareCCS dcMyTrue []
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
                 StgConApp dcMyTrue [] []
               ) idUnlifted0 PolyAlt
@@ -470,11 +470,11 @@ sampleADTArgFloat = do
         [ StgTopStringLit idStr0 (BS8.pack "Value: MyConA %d %d\n")
         , StgTopStringLit idStr1 (BS8.pack "Value: MyConB %f\n")
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
 
                 StgConApp dcMyConB
-                  [ StgLitArg $ mkMachFloat 3.14
+                  [ StgLitArg $ mkLitFloat 3.14
                   ] []
 
               ) id0 PolyAlt
@@ -540,11 +540,11 @@ sampleADTArgDouble = do
         [ StgTopStringLit idStr0 (BS8.pack "Value: MyConA %d %d\n")
         , StgTopStringLit idStr1 (BS8.pack "Value: MyConB %lf\n")
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
 
                 StgConApp dcMyConB
-                  [ StgLitArg $ mkMachDouble 3.14
+                  [ StgLitArg $ mkLitDouble 3.14
                   ] []
 
               ) id0 PolyAlt
@@ -610,7 +610,7 @@ sampleFFIArgFloat = do
       mkIdT i t = mkVanillaGlobal (mkName i $ 'x' : show i) t
       topBinds  =
         [ StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgOpApp
                 (StgFCallOp
                   (CCall $ CCallSpec
@@ -620,7 +620,7 @@ sampleFFIArgFloat = do
                   )
                   (mkUnique 'f' 0)
                 )
-                [ StgLitArg $ mkMachFloat 3.14
+                [ StgLitArg $ mkLitFloat 3.14
                 ] intTy
         ]
 
@@ -635,7 +635,7 @@ sampleFFIArgDouble = do
       mkIdT i t = mkVanillaGlobal (mkName i $ 'x' : show i) t
       topBinds  =
         [ StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgOpApp
                 (StgFCallOp
                   (CCall $ CCallSpec
@@ -645,7 +645,7 @@ sampleFFIArgDouble = do
                   )
                   (mkUnique 'f' 0)
                 )
-                [ StgLitArg $ mkMachDouble 3.14
+                [ StgLitArg $ mkLitDouble 3.14
                 ] intTy
         ]
 
@@ -664,10 +664,10 @@ sampleUnboxedUnit1 = do
       topBinds  =
         [ StgTopStringLit idStr0 (BS8.pack "Hello!\n1 + 2 = %d\n")
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
                 StgConApp (getDataCon u1IntTy)
-                  [ StgLitArg $ mkMachInt dflags 3
+                  [ StgLitArg $ mkLitInt dflags 3
                   ] []
               ) idInt0 (PrimAlt IntRep)
               [ (DEFAULT, [],
@@ -688,6 +688,41 @@ sampleUnboxedUnit1 = do
         ]
   compileProgram NCG [] topBinds
 
+{-
+--8.8.4
+data GenStgRhs pass
+  = StgRhsClosure
+        (XRhsClosure pass) -- ^ Extension point for non-global free var
+                           --   list just before 'CodeGen'.
+        CostCentreStack    -- ^ CCS to be attached (default is CurrentCCS)
+        !UpdateFlag        -- ^ 'ReEntrant' | 'Updatable' | 'SingleEntry'
+        [BinderP pass]     -- ^ arguments; if empty, then not a function;
+                           --   as above, order is important.
+        (GenStgExpr pass)  -- ^ body
+
+-- 8.6.5
+data GenStgRhs bndr occ
+  = StgRhsClosure
+        CostCentreStack         -- CCS to be attached (default is CurrentCCS)
+        StgBinderInfo           -- Info about how this binder is used (see below)
+        [occ]                   -- non-global free vars; a list, rather than
+                                -- a set, because order is important
+        !UpdateFlag             -- ReEntrant | Updatable | SingleEntry
+        [bndr]                  -- arguments; if empty, then not a function;
+                                -- as above, order is important.
+        (GenStgExpr bndr occ)   -- body
+
+data StgBinderInfo
+  = NoStgBinderInfo
+  | SatCallsOnly        -- All occurrences are *saturated* *function* calls
+                        -- This means we don't need to build an info table and
+                        -- slow entry code for the thing
+                        -- Thunks never get this value
+
+stgUnsatOcc  = NoStgBinderInfo
+
+-}
+
 -- IMPORTANT: binders can not be unboxed tuples
 -- CASE: construct prim int, unpack Unit# int into IntRep binder
 sampleUnboxedUnit2 = do
@@ -701,9 +736,9 @@ sampleUnboxedUnit2 = do
       topBinds  =
         [ StgTopStringLit idStr0 (BS8.pack "Hello!\n1 + 2 = %d\n")
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
-                StgLit $ mkMachInt dflags 3
+                StgLit $ mkLitInt dflags 3
               ) idInt0 (MultiValAlt 1)
               [ (DataAlt (utupDC [IntRep]), [idInt1],
                   StgOpApp
@@ -737,7 +772,7 @@ sampleUnboxedVoid1 = do
         [ StgTopStringLit idStr0 (BS8.pack "Hello!")
         , StgTopStringLit idStr1 (BS8.pack "OK!")
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
 
                   StgOpApp
@@ -785,7 +820,7 @@ sampleUnboxedVoid2 = do
         [ StgTopStringLit idStr0 (BS8.pack "Hello!\n")
         , StgTopStringLit idStr1 (BS8.pack "OK!\n")
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
 
                   StgOpApp
@@ -833,7 +868,7 @@ sampleUnboxedVoid3 = do
         [ StgTopStringLit idStr0 (BS8.pack "Hello!\n")
         , StgTopStringLit idStr1 (BS8.pack "OK!\n")
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
 
                   StgOpApp
@@ -879,7 +914,7 @@ sampleUnboxedVoid4 = do
       topBinds  =
         [ StgTopStringLit idStr0 (BS8.pack "OK!\n")
         , StgTopLifted $ StgNonRec (mkIdNT 1 "main" $ repTy LiftedRep) $
-            StgRhsClosure dontCareCCS {-stgSatOcc-} stgUnsatOcc [] {-SingleEntry-}Updatable [voidArgId] $
+            StgRhsClosure noExtSilent dontCareCCS {-SingleEntry-}Updatable [voidArgId] $
               StgCase (
 
                 StgConApp (utupDC []) [] []
