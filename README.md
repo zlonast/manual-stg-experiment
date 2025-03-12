@@ -9,14 +9,14 @@ This experiment suggests that GHC codegen and RTS can be used as generic compile
 ### Build
 
 ```
-stack setup
-stack build
+cabal setup
+cabal build
 ```
 
 ### Usage
 
 ```
-stack ghci StgSample.hs
+cabal repl StgSample.hs
 ```
 
 Run a sample in GHCi. i.e.

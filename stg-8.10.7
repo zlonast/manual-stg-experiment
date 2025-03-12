@@ -1,0 +1,170 @@
+CASE: user ADT Unlifted
+==== STG ====
+x0 :: Any
+[GblId] =
+    "Value: MyFalse\n"#;
+
+x1 :: Any
+[GblId] =
+    "Value: MyTrue\n"#;
+
+MyFalse :: Any
+[GblId] =
+    CCS_DONT_CARE MyFalse! [];
+
+MyTrue :: Any
+[GblId] =
+    CCS_DONT_CARE MyTrue! [];
+
+main :: Any
+[GblId] =
+    \u [void_0E]
+        case MyTrue [] of x100 {
+        __DEFAULT ->
+        case x100 of x101 {
+          MyTrue -> __pkg_ccall [x1];
+          MyFalse -> __pkg_ccall [x0];
+        };
+        };
+==== Lint STG ====
+*** initializing package database:
+initializing package database: alloc=7649208 time=2.141
+
+==================== Raw Cmm ====================
+[]
+
+
+
+==================== Raw Cmm ====================
+[section ""cstring" . :Main.x0_bytes" {
+     :Main.x0_bytes:
+         I8[] "Value: MyFalse\n"
+ }]
+
+
+
+==================== Raw Cmm ====================
+[section ""cstring" . :Main.x1_bytes" {
+     :Main.x1_bytes:
+         I8[] "Value: MyTrue\n"
+ }]
+
+
+
+==================== Raw Cmm ====================
+[section ""data" . :Main.MyFalse_closure" {
+     :Main.MyFalse_closure:
+         const :Main.MyFalse_con_info;
+ }]
+
+
+
+==================== Raw Cmm ====================
+[section ""data" . :Main.MyTrue_closure" {
+     :Main.MyTrue_closure:
+         const :Main.MyTrue_con_info;
+ }]
+
+
+
+==================== Raw Cmm ====================
+[:Main.main_entry() { //  []
+         { [(cl3v,
+             :Main.main_info:
+                 const 4294967299;
+                 const 0;
+                 const 14 :: W32;
+                 const :Main.MyTrue_closure-:Main.main_info;)]
+         }
+     {offset
+       cl3v: // global
+           goto cl3x;
+       cl3x: // global
+           _u1C::P64 = :Main.MyTrue_closure+2;
+           _u1D::P64 = _u1C::P64;
+           _cl3u::P64 = _u1D::P64 & 7;
+           if (_cl3u::P64 != 1) goto cl3s; else goto cl3t;
+       cl3s: // global
+           _cl3M::I64 = printf;
+           (_cl3D::P64) = call "ccall" arg hints:  []  result hints:  [PtrHint] (_cl3M::I64)();
+           R1 = _cl3D::P64;
+           call (P64[Sp])(R1) args: 8, res: 0, upd: 8;
+       cl3t: // global
+           _cl3L::I64 = printf;
+           (_cl3J::P64) = call "ccall" arg hints:  []  result hints:  [PtrHint] (_cl3L::I64)();
+           R1 = _cl3J::P64;
+           call (P64[Sp])(R1) args: 8, res: 0, upd: 8;
+     }
+ },
+ section ""data" . :Main.main_closure" {
+     :Main.main_closure:
+         const :Main.main_info;
+         const 0;
+ }]
+
+
+
+==================== Raw Cmm ====================
+[section ""relreadonly" . :Main.MyBool_closure_tbl" {
+     :Main.MyBool_closure_tbl:
+         const :Main.MyFalse_closure+1;
+         const :Main.MyTrue_closure+2;
+ }]
+
+
+
+==================== Raw Cmm ====================
+[section ""cstring" . il3d_str" {
+     il3d_str:
+         I8[] "main::Main.MyFalse"
+ },
+ :Main.MyFalse_con_entry() { //  []
+         { [(cl3S,
+             :Main.MyFalse_con_info:
+                 const il3d_str-:Main.MyFalse_con_info;
+                 const 4294967296;
+                 const 3 :: W32;
+                 const 0 :: W32;)]
+         }
+     {offset
+       cl3S: // global
+           R1 = R1 + 1;
+           call (P64[Sp])(R1) args: 8, res: 0, upd: 8;
+     }
+ }]
+
+
+
+==================== Raw Cmm ====================
+[section ""cstring" . il3T_str" {
+     il3T_str:
+         I8[] "main::Main.MyTrue"
+ },
+ :Main.MyTrue_con_entry() { //  []
+         { [(cl3X,
+             :Main.MyTrue_con_info:
+                 const il3T_str-:Main.MyTrue_con_info;
+                 const 4294967296;
+                 const 3 :: W32;
+                 const 1 :: W32;)]
+         }
+     {offset
+       cl3X: // global
+           R1 = R1 + 2;
+           call (P64[Sp])(R1) args: 8, res: 0, upd: 8;
+     }
+ }]
+
+
+*** systool:as:
+systool:as: alloc=83848 time=0.167
+*** systool:cc:
+systool:cc: alloc=153352 time=0.286
+*** systool:as:
+systool:as: alloc=81496 time=0.202
+*** systool:cc:
+systool:cc: alloc=123296 time=0.262
+*** systool:cc:
+systool:cc: alloc=113416 time=4.828
+*** systool:linker:
+systool:linker: alloc=947304 time=0.824
