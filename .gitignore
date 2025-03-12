@@ -1,1 +1,6 @@
 dist-newstyle
+*.out
+*.o
+*.a
+*.ll
+*.s
